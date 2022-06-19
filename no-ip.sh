@@ -22,8 +22,7 @@ then
 	exit 30
 fi
 
-
-if [ -n "$DETECTIP" ]
+if [ -n "$DETECTIP" ] && [ -z "$CNAME" ]
 then
 	IP=$(wget -qO- "http://myexternalip.com/raw")
 
@@ -33,6 +32,10 @@ then
 	fi
 fi
 
+if [ -n "$DETECTIP" ] && [ -n "$CNAME" ]
+then
+	IP=$(dig +noall +answer $CNAME| grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | head -n 1)
+fi
 
 if [ -n "$DETECTIP" ] && [ -z $IP ]
 then
@@ -62,7 +65,7 @@ case "$SERVICE" in
             SERVICEURL="www.duckdns.org/v3/update"
             ;;
 
-	google)
+		google)
             SERVICEURL="domains.google.com/nic/update"
             ;;
 	    
